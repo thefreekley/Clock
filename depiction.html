@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>МММ </title>
+	<link rel="shortcut icon" href="https://pbs.twimg.com/profile_images/949529419873333248/-hgp3B0W_400x400.jpg" type="image/x-icon">
+	
+<style type="text/css">
+	#matric{
+	visibility: ;
+	width: 640px;
+	height: 320px;
+	background-color:black;
+	border: 2px solid black;
+	border-radius: 14px;
+}
+.square{
+
+	float:left;
+	width: 20px;
+	height: 20px;
+	background: white;
+	border: 2px solid black;
+	border-radius: 10px;
+	box-sizing: border-box;
+	transition: all ease 0.2s;
+}
+#age{
+
+	pointer-events:none;
+	width: 640px;
+	height: 320px;
+	position: absolute;
+	
+}
+.border{
+
+	float: left;
+	border:1px solid white;
+	width: 160px;
+	height: 160px;
+	box-sizing: border-box;
+}
+.square:hover{
+	background:rgb(0,255,255);
+}
+#management{
+	text-align:center;
+	float: left;
+	position: absolute;
+	margin-left: 430px;
+	margin-top: -80px;
+
+}
+#list{
+	width: 60px;
+	height: 20px;
+	border:1px solid grey;
+	text-align: center;
+	float: left;
+	margin: 0px 10px;
+}
+.but{
+	margin:0px 2px;
+	float: left;
+	text-align: center;
+width: 20px;
+height: 20px;
+	
+}
+#delay{
+	text-align:center; 
+	float: left;
+	margin: 0px auto;
+	width: 118px;
+}
+#convent{
+	width: 118px;
+	float: left;
+	margin:0px auto;
+}
+#result{
+	background:rgb(250,250,250);
+	height: 400px;
+	width: 440px;
+	overflow: scroll;
+	text-align: left;
+	opacity: 0.65;
+
+}
+
+#information{
+	position: absolute;
+	margin-left: -600px;
+}
+
+#all{
+	margin-bottom: -100px;
+	display: -webkit-flex; 
+display: -ms-flexbox; 
+display: flex; 
+-webkit-box-orient: horizontal; 
+-webkit-box-direction: normal; 
+-webkit-flex-direction: row; 
+-ms-flex-direction: row; 
+flex-direction: row; 
+text-align: center; 
+-webkit-box-pack: center; 
+-webkit-justify-content: center; 
+-ms-flex-pack: center; 
+justify-content: center; 
+}
+.hint{
+	float: left;
+}
+b{
+	float: left;
+}
+#clear{
+	width: 50px;
+	margin: 0px 5px;
+}
+#call{
+	width: 50px;
+	margin: 0px 5px;
+}
+h2{
+	
+	width: 140px;
+	height: 30px;
+	text-align:center;
+}
+#play{
+	width: 118px;
+	float: left;
+	margin:0px auto;
+}
+#copy_{
+	float: left;
+	width: 50px;
+	margin: 0px 5px;
+}
+#insert{
+	float: left;
+	width: 50px;
+	margin: 0px 5px;
+}
+.acomodacity{
+	width: 30px;
+	margin:2px;
+
+}
+#huy{
+	float: left;
+margin-left: 11px;
+}
+
+#left_top{
+	border-radius: 8px 0px 0px 0px;
+}
+#right_top{
+border-radius: 0px 8px 0px 0px;	
+}
+#left_down{
+	border-radius: 0px 0px 0px 8px;
+}
+
+#right_down{
+	border-radius: 0px 0px 8px 0px;
+}
+#name_of{
+	text-align:center; 
+	float: left;
+	margin: 0px auto;
+	width: 118px;
+}
+#instruction{
+	width: 600px;
+	height: 400px;
+	float: left;
+	margin-top: 330px;
+	position: absolute;
+}
+span2{
+	width: 400px;
+	height: 550px;
+	opacity:0.1;
+	transition: 0.5s ease all;
+}
+span2:hover{
+	
+	opacity: 1;
+}
+
+</style>
+
+ 
+	</script>
+</head>
+<body>
+	</br> </br>
+ <div id="all">
+	<div id="management">
+		</br> </br></br> 
+		<h2 > DEPICTION </h2>
+		<button id="plus" class="but">+</button>
+		<button id="minus" class="but">-</button>
+		<span id="list"  >1</span>
+		
+	</br> </br>
+	<input type="number" id="delay" placeholder="delay ml"> 
+	<input type="checkbox" id="copy">
+</br> </br>
+<input type="text" id="name_of" placeholder="name"> 
+	</br></br>
+	<b >hint</b>
+	<input type="radio" class="hint" name="fill" value="1">
+	<b>→</b>
+	<input type="radio" class="hint" name="fill" value="2">
+	<b>←</b>
+	<input type="radio" class="hint" name="fill" checked="checked" value="3"> 
+	<b>×</b>
+</br>
+</br>
+<button id="clear"  style="float: left;"   > Fill </button>
+<button id="call"  style="float: left;" >Clear</button>
+</br></br>
+<button id="copy_">Copy</button>
+<button id="insert">Insert</button>
+</br></br>
+<div id="huy">
+<button class="acomodacity" id="top">🠙</button>
+</br>
+<button class="acomodacity" id="left">🠘</button>
+<button class="acomodacity" id="down">🠛</button>
+<button class="acomodacity" id="right">🠚</button>
+</div>
+</br> </br> </br>  </br> 
+	<button id="play" >⯈</button>
+	</br> </br>
+	<button id="convent" >Сonvent</button>
+	</div>
+	<div id="matric"> 
+	<div id="age"></div>
+	</div> </br>
+	<p id="instruction"> 
+            Інструкція </br>
+            <span2>
+На початку іде номер слайда анімації. </br>
+Логічно, шо коли ти нажимаєш на +- то перегортаєш слайд. </br>
+Можна перегортать і клавішами: D-"+",A-"-".</br>
+В delay треба записувать час зміни слайда на інший.</br>
+Треба записувать в мілісекундах. Ну крч 1 секунда - 1000 мілісекунд.</br>
+В name можна записать назву функції на англійській.</br>
+hint це відображення підказкі якій був наступний або попердній слайд.</br>
+Коли ти робиш сложну анімацію,орієнтуючись на порпурові точкі можна зрозуміть </br>якій був минулий слайд і його доробить</br>
+ наступний слайд. Вобщем там по стрелках буде понятно де і шо.</br>
+Fill- повністю заповнить слайд.</br>
+Сlear- очістить слайд.</br>
+Copy-копіювать цей слайд, можна нажать "С"</br>
+Insert-вставить слайд якій був скопійований на нинішній, можна нажать "V".</br>
+Дуже корисна штука коли ти робиш зв'язану анімацію.</br>
+Стрелочки для того шоб передвігать картінку</br>
+Плей вродь понятно - гра анімації.</br>
+Convent- інформація про анімацію переходить в код якій врешті</br>
+появляється в том окошку.</br>
+Copy in buffer- це крч скопіровать всю інформацію, яку врешті треба</br> 
+мені переслать </br>
+</span2>
+</br> </br> </br> <br>
+A 2019
+</p> </br>
+	<div id="information">
+<div id="result"></div> </br>
+
+<button onclick="zaebalo()">Copy in buffer</button>
+</div>
+</div>
+</body>
+<script type="text/javascript" defer>
+		
+var num_list=1;
+var max_afford=1000;
+var change_radio=3;
+var timer_=new Array(max_afford);
+var besides= new  Array();
+var delay_copy=false;
+var copy_knees=0;
+ for(var i=0;i<max_afford;i++){
+ 	timer_[i]=0;
+ 	besides[i]=new Array(512);
+ 	for(var w=0;w<512;w++){
+ 		besides[i][w]=0;
+ 	}
+ }
+for(var i=0;i<8;i++){
+document.getElementById("age").innerHTML+='<div class="border"> </div>';
+}
+for(var i=0;i<512;i++){
+document.getElementById("matric").innerHTML+='<div class="square"> </div>';
+}
+var definition=document.getElementsByClassName("square");
+
+var hint=document.getElementsByName("fill");
+
+document.getElementsByClassName("border")[0].id="left_top";
+document.getElementsByClassName("border")[3].id="right_top";
+document.getElementsByClassName("border")[4].id="left_down";
+document.getElementsByClassName("border")[7].id="right_down";
+
+hint[0].onclick=function(){
+	change_radio=0;
+		drown();
+	gently();
+
+}
+hint[1].onclick=function(){
+	change_radio=1;
+	drown();
+	gently();
+	
+}
+hint[2].onclick=function(){
+
+	change_radio=2;
+	gently();
+}
+document.getElementById("plus").onclick=plus;
+
+document.onkeypress=function(event){
+	console.log(event);
+	switch(event.code){
+		case "KeyD":plus(); break;
+		case "KeyA":minus(); break;
+		case "Space":nigh();break;
+		case "KeyC":copy();break;
+		case "KeyV": insert(); break;
+	}
+}
+
+function plus(){
+	if(num_list<max_afford)num_list++;
+	else num_list=max_afford;
+	document.getElementById("list").innerHTML=num_list;
+	refuse(-1);
+	
+}
+
+
+document.getElementById("minus").onclick=minus;
+function minus(){
+	if(num_list>1) {
+		num_list--;
+		refuse(1);
+	}
+	else num_list=1;
+	document.getElementById("list").innerHTML=num_list;
+	
+}
+
+document.getElementById("matric").onclick=function(event){
+
+	if(event.target.className=="square"){
+	
+		if(event.target.style.background=="rgb(0, 255, 255)"){
+			if(change_radio==0)	{
+				if(besides[num_list+1][fellow(event)]==1 )event.target.style.background="rgb(255,220,255)";
+				else event.target.style.background="white";
+		}
+		else if(change_radio==1){
+				if(besides[num_list-1][fellow(event)]==1 )event.target.style.background="rgb(255,220,255)";
+				else event.target.style.background="white";
+		}
+		else event.target.style.background="white"; 
+	}
+	else event.target.style.background="rgb(0, 255, 255)";
+}
+
+}
+
+
+function fellow(event){
+	for(var i=0;i<512;i++){
+			if( event.target==definition[i]) return i;
+		}
+}
+
+
+function refuse(a,b){
+
+	for(var i=0;i<512;i++){
+		if(b!=1){
+	if(definition[i].style.background=="rgb(0, 255, 255)") besides[parseInt(num_list)+a][i]=1;
+		else besides[parseInt(num_list)+a][i]=0;
+}
+
+	if(besides[num_list][i]==0) definition[i].style.background="white";
+	else if(besides[num_list][i]==1) definition[i].style.background="rgb(0,255,255)";
+
+}
+if(delay_copy==false){
+if(b!=1){
+if(document.getElementById('delay').value!="")timer_[num_list+a]=document.getElementById('delay').value;
+if(timer_[num_list]==0)document.getElementById('delay').value="";
+else document.getElementById('delay').value=timer_[num_list];
+}
+}
+else{
+	if(b!=1){
+if(document.getElementById('delay').value!=""){
+	timer_[num_list+a]=document.getElementById('delay').value;
+	timer_[num_list]=document.getElementById('delay').value;
+}
+ document.getElementById('delay').value=timer_[num_list];
+}
+}
+	/*for(var i=0;i<512;i++){
+	if(besides[num_list][i]==0) document.getElementsByClassName("square")[i].style.background="white";
+	else if(besides[num_list][i]==1) document.getElementsByClassName("square")[i].style.background="rgb(0,255,255)";
+	}*/
+	//console.log(definition[num_list]);
+ gently();
+}
+function gently(){
+
+switch (change_radio) {
+	case 0:
+	for(var i=0;i<512;i++){
+	if(besides[num_list+1][i]==1 && besides[num_list][i]!=1 )definition[i].style.background="rgb(255,220,255)";
+}
+		break;
+	
+	case 1:
+	if(num_list>1){
+	for(var i=0;i<512;i++){
+	if(besides[num_list-1][i]==1 && besides[num_list][i]!=1 )definition[i].style.background="rgb(255,220,255)";
+}
+	}
+	break;
+	case 2:
+	 drown();
+
+	break;
+}
+}
+function drown(){
+		for(var i=0;i<512;i++){
+			if(besides[num_list-1][i]==1 && besides[num_list][i]!=1 )definition[i].style.background="white";
+			if(besides[num_list+1][i]==1 && besides[num_list][i]!=1 )definition[i].style.background="white";
+		}
+}
+document.getElementById("call").onclick=function  () {
+	for(var i=0;i<512;i++){
+		if(change_radio==0) {
+			if(besides[num_list+1][i]==1 )definition[i].style.background="rgb(255,220,255)";
+			else definition[i].style.background="white";
+		}
+		else if(change_radio==1){
+		if(besides[num_list-1][i]==1 )definition[i].style.background="rgb(255,220,255)";
+		else definition[i].style.background="white";
+		}
+		else definition[i].style.background="white";
+		
+}}
+document.getElementById('clear').onclick=function(){
+for(var i=0;i<512;i++){
+	definition[i].style.background="rgb(0,255,255)";
+}
+
+}
+/////////////////////animation
+	var foolish=new Array();
+	var dub=0;
+document.getElementById("play").onclick=nigh;
+function nigh(){
+	
+	timer_[num_list]=document.getElementById('delay').value;
+	for(var i=0;i<512;i++){
+	if(definition[i].style.background=="rgb(0, 255, 255)") besides[num_list][i]=1;
+		else besides[num_list][i]=0;
+}
+	var summ_=0;
+   for(var i=0;i<max_afford;i++){
+   	carpes(i);
+			if(timer_[i]!=0 && timer_[i]!=""){
+				foolish[summ_]=i;
+				summ_++;
+			}
+	}
+	
+		for(var i=0;i<512;i++){
+	if(definition[i].style.background=="rgb(0, 255, 255)") besides[num_list][i]=1;
+		else besides[num_list][i]=0;
+}
+
+	dub=num_list;
+	var summ_=0;
+	num_list=1;
+   for(var i=0;i<max_afford;i++){
+			if(timer_[i]!=0 && timer_[i]!=""){
+				foolish[summ_]=i;
+				summ_++;
+			}
+	}
+
+	
+	play();
+}
+var count=0;
+function play(){
+
+   
+	if(count<foolish.length+1)count++;
+	
+	if(foolish.length<1)alert("Ти даун?Введи данні в delay -_-");
+	else{
+		if(count>foolish.length){
+		document.getElementById("play").innerHTML="⯈";
+		num_list=dub;
+		count=0;
+		document.getElementById("list").innerHTML=dub;
+		refuse(-1,1);	
+		}
+		else{
+			document.getElementById("play").innerHTML="||";
+	num_list=foolish[count-1];
+
+	document.getElementById("list").innerHTML=num_list;
+	refuse(-1,1);
+
+     
+    	setTimeout(play,timer_[num_list]);
+    }
+	}
+	
+    
+}
+document.getElementById("copy").onclick=function (event){
+delay_copy=event.target.checked;
+}
+document.getElementById("insert").onclick=insert;
+function insert(){
+	
+	if(copy_knees==0)alert("Спочатку скопіюй");
+	else{
+		gently();
+	for(var i=0;i<512;i++){
+	if(besides[copy_knees][i]==1)definition[i].style.background="rgb(0,255,255)";
+	else definition[i].style.background="white";
+}
+}
+
+}
+document.getElementById("copy_").onclick=copy;
+function copy(){
+	copy_knees=num_list;
+}
+
+document.getElementById("huy").onclick=function(event){
+	event.path[0].id
+	var honestly=new Array(512);
+
+for(var i=0;i<512;i++){
+if(definition[i].style.background=="rgb(0, 255, 255)") honestly[i]=1;
+		else honestly[i]=0;
+}
+///
+if(event.path[0].id=="top"){
+for(var i=0;i<512;i++){
+
+	if(honestly[i]==1 && i>=32)definition[i-32].style.background="rgb(0, 255, 255)";
+	else if(honestly[i]==0 && i>=32)native(i-32);
+	if(i<32){
+     native(480+i);
+	}
+}
+}
+else if(event.path[0].id=="down"){
+
+for(var i=0;i<512;i++){
+	if(honestly[i]==1 && i<480) definition[i+32].style.background="rgb(0, 255, 255)";
+	else if(honestly[i]==0 && i<480)native(i+32);
+	if(i>=480){
+     native(511-i);
+	}
+}
+
+}
+else if(event.path[0].id=="left"){
+	for(var w=0;w<512;w+=32){
+ for(var i=1; i<33; i++){
+ 		if(honestly[i+w]==1 && i!=32)definition[i-1+w].style.background="rgb(0, 255, 255)";
+	else if(honestly[i+w]==0  )native(i-1+w);
+ }
+}
+}
+else if(event.path[0].id=="right"){
+definition[0].style.background="white";
+	for(var w=0;w<512;w+=32){
+ for(var i=0; i<32; i++){
+
+ 		if(honestly[i+w]==1 && i!=31 ) definition[i+1+w].style.background="rgb(0, 255, 255)";
+ 		else if(honestly[i+w]==0)native(i+1+w);
+ 	
+ }
+}
+ 
+}
+
+}
+function native(a){
+	if(change_radio==0){
+		if(besides[num_list+1][a]==1) definition[a].style.background="rgb(255,220,255)";
+		else definition[a].style.background="white";
+	}
+
+	else if(change_radio==1){
+		if(besides[num_list-1][a]==1) definition[a].style.background="rgb(255,220,255)";
+		else definition[a].style.background="white";
+	}
+else{
+	definition[a].style.background="white";
+}
+}
+var depiction_of=new Array();
+
+document.getElementById("convent").onclick= function(){
+	for(var i=0;i<max_afford;i++){
+depiction_of[i]="";
+}
+timer_[num_list]=document.getElementById('delay').value;
+	for(var i=0;i<512;i++){
+	if(definition[i].style.background=="rgb(0, 255, 255)") besides[num_list][i]=1;
+		else besides[num_list][i]=0;
+}
+	var summ_=0;
+   for(var i=0;i<max_afford;i++){
+   	carpes(i);
+			if(timer_[i]!=0 && timer_[i]!=""){
+				foolish[summ_]=i;
+				summ_++;
+			}
+	}
+
+	
+	var res=document.getElementById("result");
+	res.innerHTML="";
+	res.innerHTML+="void "+document.getElementById("name_of").value+"(){ </br>"
+	res.innerHTML+="byte n[" +String(foolish.length) + "][9][9]={ </br>";
+	for(var i=0;i<foolish.length;i++){
+		res.innerHTML+=depiction_of[foolish[i]];
+		if(i<foolish.length-1)res.innerHTML+="}, </br>";
+		else res.innerHTML+="} </br>";
+	}
+	//res.innerHTML+="};" /*
+//		res.innerHTML+="</br> </br> int timer["+foolish.length+"]={";
+
+//	for(var i=0;i<foolish.length;i++){
+//	res.innerHTML+=String(timer_[foolish[i]]);
+//	if(i<foolish.length-1)res.innerHTML+=",";
+
+//	}
+res.innerHTML+="}; </br>"; 
+	for(var i=0;i<foolish.length;i++){
+		res.innerHTML+=" for(int i=0;i<8;i++){ </br> ";
+		res.innerHTML+="  for(int g=0;g<8;g++){ </br>";
+		res.innerHTML+="lc.setRow(i,g,n["+ String(i) + "][i][g]); </br>";
+		res.innerHTML+="} </br> } </br> delay("+ String(timer_[foolish[i]]) +"); </br>";
+	}
+	res.innerHTML+=" </br>}";
+
+
+
+
+}
+function zaebalo(){
+	 //нашли наш контейнер
+ 
+  //производим его выделение
+  var range = document.createRange();
+  range.selectNode(document.getElementById("result")); 
+  window.getSelection().addRange(range); 
+ 
+  //пытаемся скопировать текст в буфер обмена
+  try { 
+    document.execCommand('copy'); 
+  } catch(err) { 
+    console.log('Can`t copy, boss'); 
+  } 
+  //очистим выделение текста, чтобы пользователь "не парился"
+  window.getSelection().removeAllRanges();
+}
+
+var sasi=[24,16,8,0,280,272,264,256];
+function carpes(frame){
+
+	depiction_of[frame-1]+="{ </br> ";
+	for(var g=0;g<8;g++){
+		depiction_of[frame-1]+="{"
+	for(var i=0+sasi[g];i<256+sasi[g];i+=32){
+		depiction_of[frame-1]+="B";
+		for(var w=0;w<8;w++){
+			depiction_of[frame-1]+=String(besides[frame][w+i]);
+		}
+		if(i<256+sasi[g]-32)depiction_of[frame-1]+=",";
+	}
+	if(g<7)depiction_of[frame-1]+="}, </br>";
+	else depiction_of[frame-1]+="} </br>";
+}
+}
+</script>
+</html>
