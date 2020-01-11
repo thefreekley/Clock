@@ -4,8 +4,8 @@
 
 #define PHOTORESISTOR A2
 
-#define BUTTON_UP 4
-#define BUTTON_DOWN 6
+#define BUTTON_UP_PIN 6
+#define BUTTON_DOWN_PIN 4
 
 #define SDA_RTC 3
 #define SCL_RTC 9
@@ -27,7 +27,9 @@ DHT dht(DHTPIN, DHTTYPE);
 #include <Wire.h>
 BME280I2C bme;
 
-
+#include "GyverButton.h"
+GButton BUTTON_UP(BUTTON_UP_PIN);
+GButton BUTTON_DOWN(BUTTON_DOWN_PIN);
 
 #include <iarduino_RTC.h>                                  
 iarduino_RTC time(RTC_DS3231);  
@@ -58,28 +60,26 @@ void setup(){
   lc.setIntensity(i,8);
   lc.clearDisplay(i);
   }
-  
+  pinMode(6,INPUT_PULLUP);
+  pinMode(4,INPUT_PULLUP);
+  pinMode(5,OUTPUT);
+  pinMode(A2,INPUT);
+  pinMode(LED,OUTPUT);
+  analogWrite(LED,250);
 }
 
 
 void loop(){
-  int h = dht.readHumidity();
-  int t = dht.readTemperature();
+  BUTTON_UP.tick();
+  BUTTON_DOWN.tick();  
+  if(BUTTON_UP.isSingle())Serial.println("UP");
+  if(BUTTON_DOWN.isSingle())Serial.println("DOWN");
+  Shine();
+  BigTemperatureMode();
 
 
-   float temp(NAN), hum(NAN), pres(NAN);
-   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
-   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
-   bme.read(pres, temp, hum, tempUnit, presUnit);
-   AnimationNumber(1,2,1,1,50);
-   AnimationNumber(1,0,1,5,50);
-   AnimationNumber(1,2,0,1,50);
-   AnimationNumber(1,0,0,5,50);
-    delay(6000);
-     AnimationNumber(0,2,1,1,50);
-   AnimationNumber(0,0,1,5,50);
-   AnimationNumber(0,2,0,1,50);
-   AnimationNumber(0,0,0,5,50);
+
+ 
     /*
   time.Hours
   time.minutes
@@ -90,6 +90,187 @@ void loop(){
   time.year
     */
     
+}
+
+void phaseOne(int row,int MatrixNumber,int throw_){
+  
+  if(throw_<8){
+    lc.setLed(MatrixNumber,7,row,LOW);
+    lc.setLed(MatrixNumber+4,throw_,row,HIGH);
+    if(throw_!=0)lc.setLed(MatrixNumber+4,throw_-1,row,LOW);
+  }
+  else{
+    lc.setLed(MatrixNumber+4,7,row,LOW);
+    lc.setLed(MatrixNumber,throw_-7,row,HIGH);
+    if(throw_!=0)lc.setLed(MatrixNumber,throw_-7-1,row,LOW);
+    
+  }
+}
+void phaseTwo(int row,int MatrixNumber,int throw_){
+  
+  if(throw_<8){
+    lc.setLed(MatrixNumber+4,0,row,LOW);
+    lc.setLed(MatrixNumber,7-throw_,row,HIGH);
+    if(throw_!=0)lc.setLed(MatrixNumber,7-throw_+1,row,LOW);
+    
+  }
+  else{
+    lc.setLed(MatrixNumber,0,row,LOW);
+    lc.setLed(MatrixNumber+4,14-throw_,row,HIGH);
+    if(throw_!=0)lc.setLed(MatrixNumber+4,14-throw_+1,row,LOW);
+    
+  }
+}
+int Shine(){
+  static byte old_intensity=0;
+  static byte intensity=8;
+  static long flag1=0;
+  
+  old_intensity=intensity;
+  
+  if(millis()-flag1>5000){
+  
+  intensity= map(analogRead(PHOTORESISTOR),20,800,0,13);
+  
+  
+  //Serial.println(intensity);
+  if(old_intensity>=intensity){
+  for(int g=old_intensity;g>=intensity;g--){
+   Serial.println(g);
+   for(int i=0;i<8;i++){
+  lc.setIntensity(i,g);
+  }
+  
+  delay(50);
+  }
+  }
+  else{
+  for(int g=old_intensity;g<=intensity;g++){
+   Serial.println(g);
+   for(int i=0;i<8;i++){
+  lc.setIntensity(i,g);
+  }
+  
+  delay(50);
+  }
+  }
+  
+  flag1=millis();
+  }
+}
+
+void depiction(int index, int matrix, int shift){
+ 
+  
+ byte example;
+ static byte points=B00000001;
+ 
+ for(int g=0;g<2;g++){
+  for(int i=0;i<8;i++){
+    if(shift>0)example=BigNumber[index][g][i]>>shift;
+    else example=BigNumber[index][g][i]<<abs(shift);
+    
+    //if((matrix==2 || matrix==6) && (i==3 || i==4))example=example|points;
+    
+    //if((matrix==1 || matrix==5) && (i==4 || i==3))example=example|reflectByte(points);
+
+    
+    lc.setRow(matrix+g*4,i,example);
+    
+  }
+  }
+  
+}
+
+byte reflectByte(byte x){
+     x = (x & 0x55) << 1 | (x & 0xAA) >> 1;
+   x = (x & 0x33) << 2 | (x & 0xCC) >> 2;
+   x = (x & 0x0F) << 4 | (x & 0xF0) >> 4;
+   return x;
+}
+void BigClockMod(){
+    byte firstCheck=time.minutes;
+    time.gettime();
+    if(time.minutes!=firstCheck || millis()<1000){ // це треба виправить з мілліс ато костиль максимальний
+         depiction((time.minutes-(int(time.minutes/10))*10),0,1);
+    depiction(int(time.minutes/10),1,1);
+    depiction((time.Hours-(int(time.Hours/10))*10),2,-1);
+    depiction(int(time.Hours/10),3,-1);
+    }
+    static unsigned long time_for_change=0;
+ static int throw_=0;
+ static boolean flag_side=0;
+ if(millis()-time_for_change>80){
+  if(throw_<14)throw_+=1;
+  else{ throw_=0; flag_side=!flag_side;}
+  time_for_change=millis();
+  
+ if(flag_side==0){
+  phaseOne(0,1,throw_);
+  phaseTwo(7,2,throw_);
+ }
+ else{
+  phaseOne(7,2,throw_);
+  phaseTwo(0,1,throw_);
+ }
+ }
+ 
+
+ 
+    /* lc.setLed(1,3,1,1);
+    lc.setLed(1,4,1,1);
+     lc.setLed(2,3,7,1);
+    lc.setLed(2,4,7,1);
+    lc.setLed(5,3,1,1);
+    lc.setLed(5,4,1,1);
+     lc.setLed(6,3,7,1);
+    lc.setLed(6,4,7,1); */
+}
+
+/*void SmallDepiction(){
+  SmallNumber
+    if(shift>0)example=BigNumber[index][g][i]>>shift; //там треба наложить одне на одне. Типа узнаєм цифру і наложуємо десяту частину на цифру. 
+    else example=BigNumber[index][g][i]<<abs(shift); // а іще цельсіум зроби
+}*/
+void BigTemperatureMode(){
+  float temp(NAN), hum(NAN), pres(NAN);
+   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
+   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
+   bme.read(pres, temp, hum, tempUnit, presUnit);
+   if(temp>0)depiction(10,3,0);
+   else depiction(11,3,0);
+   depiction(int(temp/10),2,0);
+   depiction(int(temp-int(temp/10)*10),1,0);
+   Serial.println(temp);
+}
+
+void Information(){
+  int h = dht.readHumidity();
+  int t = dht.readTemperature();
+
+
+   float temp(NAN), hum(NAN), pres(NAN);
+   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
+   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
+   bme.read(pres, temp, hum, tempUnit, presUnit);
+
+   Serial.print(h);
+   Serial.print(" -hum DHT ");
+   Serial.print(t);
+   Serial.print ("-  temp DHT ");
+   Serial.print(pres);
+   Serial.print(" -pres BME280 ");
+   Serial.print(temp);
+   Serial.print(" -temp BME280 ");
+   Serial.print(analogRead(A2));
+   Serial.print(" - shine ");
+   Serial.print(digitalRead(6));
+   Serial.print(" ");
+   Serial.print(digitalRead(4));
+   Serial.print(" ");
+    Serial.print(time.seconds);
+   Serial.println(" -seconds ");
+ 
 }
 
  
