@@ -75,7 +75,7 @@ void loop(){
   if(BUTTON_UP.isSingle())Serial.println("UP");
   if(BUTTON_DOWN.isSingle())Serial.println("DOWN");
   Shine();
-  BigTemperatureMode();
+   BigTemperatureMode();
 
 
 
@@ -189,10 +189,14 @@ byte reflectByte(byte x){
    return x;
 }
 void BigClockMod(){
+    static boolean flag_privet=0;
     byte firstCheck=time.minutes;
     time.gettime();
-    if(time.minutes!=firstCheck || millis()<1000){ // це треба виправить з мілліс ато костиль максимальний
-         depiction((time.minutes-(int(time.minutes/10))*10),0,1);
+    
+    if(time.minutes!=firstCheck || flag_privet==0){
+      // це треба виправить з мілліс ато костиль максимальний
+    flag_privet=1;
+    depiction((time.minutes-(int(time.minutes/10))*10),0,1);
     depiction(int(time.minutes/10),1,1);
     depiction((time.Hours-(int(time.Hours/10))*10),2,-1);
     depiction(int(time.Hours/10),3,-1);
@@ -227,21 +231,53 @@ void BigClockMod(){
     lc.setLed(6,4,7,1); */
 }
 
-/*void SmallDepiction(){
-  SmallNumber
-    if(shift>0)example=BigNumber[index][g][i]>>shift; //там треба наложить одне на одне. Типа узнаєм цифру і наложуємо десяту частину на цифру. 
-    else example=BigNumber[index][g][i]<<abs(shift); // а іще цельсіум зроби
-}*/
+void SmallDepiction(int value,int matrix){
+    int tenthPart=int(value/10);
+    int singlePart=value-(int(value/10))*10;
+    for(int i=0;i<6;i++){
+      byte siftSinglePart=SmallNumber[singlePart][i]>>4;
+      byte example=SmallNumber[tenthPart][i]|siftSinglePart;
+      lc.setRow(matrix,i+1,example);
+    }
+    
+}
 void BigTemperatureMode(){
-  float temp(NAN), hum(NAN), pres(NAN);
+
+  byte animation[7][8]{
+    {B00000000,B00000000,B00000000,B00011000,B00011000,B00000000,B00000000,B00000000},
+    {B00000000,B00000000,B00111100,B00100100,B00100100,B00111100,B00000000,B00000000},
+    {B00000000,B01111110,B01000010,B01000010,B01000010,B01000010,B01111110,B00000000},
+    {B00000000,B00111100,B01100110,B01000010,B01000010,B01100110,B00111100,B00000000},
+    {B00000000,B00000000,B00100100,B00011000,B00011000,B00100100,B00000000,B00000000},
+    {B00000000,B00000000,B00011000,B00100100,B00100100,B00011000,B00000000,B00000000},
+    {B00000000,B00000000,B00000000,B00011000,B00011000,B00000000,B00000000,B00000000},
+  };
+  static unsigned long time_for_change0=0;
+  static unsigned int phase_time=0;
+  if(millis()-time_for_change0>100){
+    if(phase_time>5)phase_time=0;
+    else phase_time++;
+    if(phase_time==0)delay(500);
+    for(int i=0;i<8;i++){
+      lc.setRow(4,i,animation[phase_time][i]);
+    }
+    time_for_change0=millis();
+  }
+ static unsigned long time_for_change=0;
+   if(millis()-time_for_change>1000){
+    float temp(NAN), hum(NAN), pres(NAN);
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
    bme.read(pres, temp, hum, tempUnit, presUnit);
+   
    if(temp>0)depiction(10,3,0);
    else depiction(11,3,0);
    depiction(int(temp/10),2,0);
    depiction(int(temp-int(temp/10)*10),1,0);
-   Serial.println(temp);
+  // Serial.println(String(temp)+"  "+String(t));
+   SmallDepiction(int(100*(temp-int(temp))),0);
+   time_for_change=millis();
+   }
 }
 
 void Information(){
