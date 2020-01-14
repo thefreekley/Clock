@@ -18,7 +18,9 @@
 #define pin_SW_SCL 9 
 
 //**********************LIBRARARY***************************//
-
+void depiction(int index, int matrix, int shift);
+void SmallDepiction(int value,int matrix);
+//
 #include "DHT.h"
 #define DHTTYPE DHT11 
 DHT dht(DHTPIN, DHTTYPE);
@@ -39,7 +41,8 @@ LedControl lc=LedControl(12,11,10,8);
 
 #include "AnimationBumber.h"
 //void AnimationNumber(boolean off,int number,int matrix,int row,int ping)
-
+#include "BigTemperatureMode.h"
+#include "BigClockMode.h"
 #include "Bolds.h"
 //SmallNumber[10][6] BigNumber[10][2][8]
 
@@ -70,13 +73,31 @@ void setup(){
 
 
 void loop(){
+  /*
   BUTTON_UP.tick();
-  BUTTON_DOWN.tick();  
-  if(BUTTON_UP.isSingle())Serial.println("UP");
-  if(BUTTON_DOWN.isSingle())Serial.println("DOWN");
-  Shine();
-   BigTemperatureMode();
+  BUTTON_DOWN.tick();
+  static byte Modes;  
+  if(BUTTON_UP.isSingle()){
+    if(Modes>=1)Modes=0;
+    else Modes++;
+    for(int i=0;i<8;i++){lc.clearDisplay(i);}
+  }
+  
+  if(BUTTON_DOWN.isSingle()){
+    if(Modes<0)Modes=1;
+    else Modes--;
+    for(int i=0;i<8;i++){lc.clearDisplay(i);}
+  }
 
+  switch(Modes){
+    case 0: BigClockMode(); break;
+    case 1: BigTemperatureMode(); break;
+  }
+  */
+  GetWeather();
+  Shine();
+  
+ // Serial.println(digitalRead(BUTTON_UP_PIN));
 
 
  
@@ -92,35 +113,7 @@ void loop(){
     
 }
 
-void phaseOne(int row,int MatrixNumber,int throw_){
-  
-  if(throw_<8){
-    lc.setLed(MatrixNumber,7,row,LOW);
-    lc.setLed(MatrixNumber+4,throw_,row,HIGH);
-    if(throw_!=0)lc.setLed(MatrixNumber+4,throw_-1,row,LOW);
-  }
-  else{
-    lc.setLed(MatrixNumber+4,7,row,LOW);
-    lc.setLed(MatrixNumber,throw_-7,row,HIGH);
-    if(throw_!=0)lc.setLed(MatrixNumber,throw_-7-1,row,LOW);
-    
-  }
-}
-void phaseTwo(int row,int MatrixNumber,int throw_){
-  
-  if(throw_<8){
-    lc.setLed(MatrixNumber+4,0,row,LOW);
-    lc.setLed(MatrixNumber,7-throw_,row,HIGH);
-    if(throw_!=0)lc.setLed(MatrixNumber,7-throw_+1,row,LOW);
-    
-  }
-  else{
-    lc.setLed(MatrixNumber,0,row,LOW);
-    lc.setLed(MatrixNumber+4,14-throw_,row,HIGH);
-    if(throw_!=0)lc.setLed(MatrixNumber+4,14-throw_+1,row,LOW);
-    
-  }
-}
+
 int Shine(){
   static byte old_intensity=0;
   static byte intensity=8;
@@ -136,7 +129,7 @@ int Shine(){
   //Serial.println(intensity);
   if(old_intensity>=intensity){
   for(int g=old_intensity;g>=intensity;g--){
-   Serial.println(g);
+  // Serial.println(g);
    for(int i=0;i<8;i++){
   lc.setIntensity(i,g);
   }
@@ -146,7 +139,7 @@ int Shine(){
   }
   else{
   for(int g=old_intensity;g<=intensity;g++){
-   Serial.println(g);
+  // Serial.println(g);
    for(int i=0;i<8;i++){
   lc.setIntensity(i,g);
   }
@@ -158,7 +151,6 @@ int Shine(){
   flag1=millis();
   }
 }
-
 void depiction(int index, int matrix, int shift){
  
   
@@ -181,56 +173,6 @@ void depiction(int index, int matrix, int shift){
   }
   
 }
-
-byte reflectByte(byte x){
-     x = (x & 0x55) << 1 | (x & 0xAA) >> 1;
-   x = (x & 0x33) << 2 | (x & 0xCC) >> 2;
-   x = (x & 0x0F) << 4 | (x & 0xF0) >> 4;
-   return x;
-}
-void BigClockMod(){
-    static boolean flag_privet=0;
-    byte firstCheck=time.minutes;
-    time.gettime();
-    
-    if(time.minutes!=firstCheck || flag_privet==0){
-      // це треба виправить з мілліс ато костиль максимальний
-    flag_privet=1;
-    depiction((time.minutes-(int(time.minutes/10))*10),0,1);
-    depiction(int(time.minutes/10),1,1);
-    depiction((time.Hours-(int(time.Hours/10))*10),2,-1);
-    depiction(int(time.Hours/10),3,-1);
-    }
-    static unsigned long time_for_change=0;
- static int throw_=0;
- static boolean flag_side=0;
- if(millis()-time_for_change>80){
-  if(throw_<14)throw_+=1;
-  else{ throw_=0; flag_side=!flag_side;}
-  time_for_change=millis();
-  
- if(flag_side==0){
-  phaseOne(0,1,throw_);
-  phaseTwo(7,2,throw_);
- }
- else{
-  phaseOne(7,2,throw_);
-  phaseTwo(0,1,throw_);
- }
- }
- 
-
- 
-    /* lc.setLed(1,3,1,1);
-    lc.setLed(1,4,1,1);
-     lc.setLed(2,3,7,1);
-    lc.setLed(2,4,7,1);
-    lc.setLed(5,3,1,1);
-    lc.setLed(5,4,1,1);
-     lc.setLed(6,3,7,1);
-    lc.setLed(6,4,7,1); */
-}
-
 void SmallDepiction(int value,int matrix){
     int tenthPart=int(value/10);
     int singlePart=value-(int(value/10))*10;
@@ -241,47 +183,78 @@ void SmallDepiction(int value,int matrix){
     }
     
 }
-void BigTemperatureMode(){
+byte reflectByte(byte x){
+     x = (x & 0x55) << 1 | (x & 0xAA) >> 1;
+   x = (x & 0x33) << 2 | (x & 0xCC) >> 2;
+   x = (x & 0x0F) << 4 | (x & 0xF0) >> 4;
+   return x;
+}
 
-  byte animation[7][8]{
-    {B00000000,B00000000,B00000000,B00011000,B00011000,B00000000,B00000000,B00000000},
-    {B00000000,B00000000,B00111100,B00100100,B00100100,B00111100,B00000000,B00000000},
-    {B00000000,B01111110,B01000010,B01000010,B01000010,B01000010,B01111110,B00000000},
-    {B00000000,B00111100,B01100110,B01000010,B01000010,B01100110,B00111100,B00000000},
-    {B00000000,B00000000,B00100100,B00011000,B00011000,B00100100,B00000000,B00000000},
-    {B00000000,B00000000,B00011000,B00100100,B00100100,B00011000,B00000000,B00000000},
-    {B00000000,B00000000,B00000000,B00011000,B00011000,B00000000,B00000000,B00000000},
-  };
-  static unsigned long time_for_change0=0;
-  static unsigned int phase_time=0;
-  if(millis()-time_for_change0>100){
-    if(phase_time>5)phase_time=0;
-    else phase_time++;
-    if(phase_time==0)delay(500);
-    for(int i=0;i<8;i++){
-      lc.setRow(4,i,animation[phase_time][i]);
+
+void BigHumidityMode(){
+    
+   
+//  float int = dht.readHumidity();
+ // Serial.println(int();
+}
+
+
+
+static int angle, delta;
+static unsigned long pressure, aver_pressure, pressure_array[6], time_array[6];
+static unsigned long sumX, sumY, sumX2, sumXY;
+static float a, b;
+
+ int GetWeather(){
+static unsigned long WheatherTimer=0;
+if(millis()-WheatherTimer>60000){
+      delay(200);
+    pressure = aver_sens();                          
+    for (byte i = 0; i < 5; i++) {                  
+      pressure_array[i] = pressure_array[i + 1];     
     }
-    time_for_change0=millis();
-  }
- static unsigned long time_for_change=0;
-   if(millis()-time_for_change>1000){
-    float temp(NAN), hum(NAN), pres(NAN);
+    pressure_array[5] = pressure;                   
+
+    sumX = 0;
+    sumY = 0;
+    sumX2 = 0;
+    sumXY = 0;
+    for (int i = 0; i < 6; i++) {                  
+      sumX += time_array[i];
+      sumY += (long)pressure_array[i];
+      sumX2 += time_array[i] * time_array[i];
+      sumXY += (long)time_array[i] * pressure_array[i];
+    }
+    a = 0;
+    a = (long)6 * sumXY;  
+    a = a - (long)sumX * sumY;
+    a = (float)a / (6 * sumX2 - sumX * sumX);
+    delta = a * 6;                   
+    angle = map(delta, -250, 250, 0, 100);
+    angle = constrain(angle, 0, 100);  
+    Serial.println(angle);
+    WheatherTimer=millis();
+    return angle;
+}               
+}
+
+
+long aver_sens() {
+   float temp(NAN), hum(NAN), pres(NAN);
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
    bme.read(pres, temp, hum, tempUnit, presUnit);
-   
-   if(temp>0)depiction(10,3,0);
-   else depiction(11,3,0);
-   depiction(int(temp/10),2,0);
-   depiction(int(temp-int(temp/10)*10),1,0);
-  // Serial.println(String(temp)+"  "+String(t));
-   SmallDepiction(int(100*(temp-int(temp))),0);
-   time_for_change=millis();
-   }
+
+  pressure = 0;
+  for (byte i = 0; i < 10; i++) {
+    pressure += pres;
+  }
+  aver_pressure = pressure / 10;
+  return aver_pressure;
 }
 
 void Information(){
-  int h = dht.readHumidity();
+  
   int t = dht.readTemperature();
 
 
@@ -290,7 +263,7 @@ void Information(){
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
    bme.read(pres, temp, hum, tempUnit, presUnit);
 
-   Serial.print(h);
+//   Serial.print(h);
    Serial.print(" -hum DHT ");
    Serial.print(t);
    Serial.print ("-  temp DHT ");
