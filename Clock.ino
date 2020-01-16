@@ -38,7 +38,7 @@ iarduino_RTC time(RTC_DS3231);
 
 #include "LedControlMS.h"
 LedControl lc=LedControl(12,11,10,8);
-
+#include "smiles.h"
 #include "AnimationBumber.h"
 //void AnimationNumber(boolean off,int number,int matrix,int row,int ping)
 #include "BigTemperatureMode.h"
@@ -69,11 +69,13 @@ void setup(){
   pinMode(A2,INPUT);
   pinMode(LED,OUTPUT);
   analogWrite(LED,250);
+   randomSeed(analogRead(A6));
+
 }
 
 
 void loop(){
-  /*
+ /*
   BUTTON_UP.tick();
   BUTTON_DOWN.tick();
   static byte Modes;  
@@ -94,9 +96,11 @@ void loop(){
     case 1: BigTemperatureMode(); break;
   }
   */
+  //BigHumidityMode();
+ arrowUp(0);
   GetWeather();
   Shine();
-  
+ //  BigClockMode();
  // Serial.println(digitalRead(BUTTON_UP_PIN));
 
 
@@ -150,6 +154,7 @@ int Shine(){
   
   flag1=millis();
   }
+  return intensity;
 }
 void depiction(int index, int matrix, int shift){
  
@@ -192,10 +197,16 @@ byte reflectByte(byte x){
 
 
 void BigHumidityMode(){
-    
-   
+    static byte last_information=0;
+//    static unsigned long 
 //  float int = dht.readHumidity();
- // Serial.println(int();
+  depiction(int(dht.readHumidity()/10), 3, 1);
+  depiction(dht.readHumidity()-(int(dht.readHumidity()/10))*10, 2, 1);
+  depiction(12,1,1);
+  
+ if(dht.readHumidity()>40 && dht.readHumidity()<= 60)GoodSmile(4);
+ else if((dht.readHumidity()>30 && dht.readHumidity()<=40) || (dht.readHumidity()>60 && dht.readHumidity()< 70))RestlessSmile(4);
+ else if(dht.readHumidity()<=30 || dht.readHumidity()>=70)TeriblSmile(4);
 }
 
 

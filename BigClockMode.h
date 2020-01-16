@@ -1,7 +1,7 @@
 void phaseOne(int row,int MatrixNumber,int throw_){
   
   if(throw_<8){
-   // lc.setLed(MatrixNumber,7,row,LOW);
+    lc.setLed(MatrixNumber,7,row,LOW);
     lc.setLed(MatrixNumber+4,throw_,row,HIGH);
     if(throw_!=0)lc.setLed(MatrixNumber+4,throw_-1,row,LOW);
   }
@@ -18,7 +18,7 @@ void phaseTwo(int row,int MatrixNumber,int throw_){
   if(throw_<8){
     lc.setLed(MatrixNumber+4,0,row,LOW);
     lc.setLed(MatrixNumber,7-throw_,row,HIGH);
-    //if(throw_!=0)lc.setLed(MatrixNumber,7-throw_+1,row,LOW);
+    if(throw_!=0)lc.setLed(MatrixNumber,7-throw_+1,row,LOW);
     
   }
   else{

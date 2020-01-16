@@ -65,7 +65,7 @@ void BigTemperatureMode(){
 
   static unsigned long time_for_change1=0;
   static unsigned int phase_time1=0;
-  if(millis()-time_for_change1>70){
+  if(millis()-time_for_change1>50){
     if(phase_time1>19)phase_time1=0;
     else phase_time1++;
     
