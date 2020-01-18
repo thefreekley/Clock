@@ -27,15 +27,6 @@ unsigned long  pressure_array[6], time_array[6];
 
 #include <EEPROM.h> 
 
-#define LOG_OUT 1 // use the log output function
-#define FHT_N 64  // set to 256 point fht
-#include <FHT.h>
-#define MIC_PIN 0
-double prevVolts = 100.0;
-
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-     
 #include <FHT.h> 
 
 #include "DHT.h"
@@ -64,13 +55,18 @@ LedControl lc=LedControl(12,11,10,8);
 #include "Bolds.h"
 #include "ComplexMode.h"
 //SmallNumber[10][6] BigNumber[10][2][8]
-
+boolean change_shine;
+byte your_shine;
 //****************PROGRAM**********************************//
 
 
  //- для вичеслення середнього значення вологості
 
 void setup(){
+      Modes=EEPROM.read(0); 
+  change_shine=EEPROM.read(1);
+  your_shine=EEPROM.read(2);
+  
   dht.begin();
   Serial.begin(9600);
   Wire.begin();
@@ -81,7 +77,13 @@ void setup(){
   hum_array[i]=dht.readHumidity();
   if(i==8)break;
   lc.shutdown(i,false);
-  lc.setIntensity(i,8);
+  if(change_shine==0)lc.setIntensity(i,8);
+  else lc.setIntensity(i,your_shine);
+  lc.clearDisplay(i);
+  
+  }
+  intro();
+    for(int i=0;i<8;i++){
   lc.clearDisplay(i);
   
   }
@@ -102,23 +104,26 @@ void setup(){
     pressure_array[i] = pres;  // забить весь массив текущим давлением
     time_array[i] = i;             // забить массив времени числами 0 - 5
   }
-  Modes=EEPROM.read(0); 
-  
-  sbi(ADCSRA, ADPS2);
-  cbi(ADCSRA, ADPS1);
-  sbi(ADCSRA, ADPS0);
 
-  analogReference(EXTERNAL);  
 }
 
 
 void loop(){
- 
+  static boolean flag_zopka=0;
+  
   BUTTON_UP.tick();
   BUTTON_DOWN.tick();
-    
-  if(BUTTON_UP.isSingle()){
   
+  if(BUTTON_UP.isDouble())flag_zopka=!flag_zopka;
+  
+  if(BUTTON_DOWN.isDouble()){
+    change_shine=!change_shine;
+    EEPROM.write(1,change_shine); 
+  }
+   
+ 
+  if(BUTTON_UP.isSingle()){
+  flag_zopka=0;
     if(Modes>=4)Modes=0;
     else Modes++;
     EEPROM.write(0,Modes); 
@@ -126,12 +131,14 @@ void loop(){
   }
   
   if(BUTTON_DOWN.isSingle()){
+    flag_zopka=0;
     if(Modes<=0)Modes=1;
     else Modes--;
     EEPROM.write(0,Modes);
     for(int i=0;i<8;i++){lc.clearDisplay(i);}
   }
-
+  //Serial.println(flag_zopka);
+if(flag_zopka==0){   
   switch(Modes){
     case 0: BigClockMode(); break;
     case 1: BigTemperatureMode(); break;
@@ -139,9 +146,39 @@ void loop(){
     case 3: BigPresMode(); break;
     case 4: ComplexMode1(); break;
   }
+  }
+  else{
+    puzik();
+  }
   
   GetWeather();
-  Shine();
+  
+  if(change_shine==0){
+    Shine();
+    analogWrite(LED,250);
+  }
+  else{
+    analogWrite(LED,0);
+   if(BUTTON_UP.isHold()){
+    if(your_shine>=15)your_shine=0;
+    else your_shine++;
+    EEPROM.write(2,your_shine);
+    delay(200);
+     for(int i=0;i<8;i++){
+  lc.setIntensity(i,your_shine); 
+  }  
+   }
+   if(BUTTON_DOWN.isHold()){
+    if(your_shine<=0)your_shine=15;
+    else your_shine--;
+    EEPROM.write(2,your_shine);
+    delay(200);
+      for(int i=0;i<8;i++){
+  lc.setIntensity(i,your_shine); 
+  }
+   }
+   Serial.println(your_shine);
+  }
  //  BigClockMode();
  // Serial.println(digitalRead(BUTTON_UP_PIN));
 
@@ -198,6 +235,54 @@ int Shine(){
   }
   return intensity;
 }
+
+
+void puzik(){
+byte n[1][9][9]={
+{
+{B00100000,B00100000,B00100000,B11100000,B00100000,B00100000,B00100000,B00000000},
+{B10010001,B10010001,B10010001,B10010001,B01110001,B00010001,B11100001,B00000000},
+{B00111100,B00100100,B00100100,B00100100,B00111100,B00100100,B00100100,B00000000},
+{B00011110,B00010010,B00010010,B00010010,B00111111,B00100001,B00100001,B00000000},
+{B01110100,B00010100,B00010100,B01111100,B01010000,B01010000,B01011100,B00000000},
+{B00100001,B00100001,B00100011,B00100101,B00101001,B00110001,B00100001,B00000000},
+{B00111110,B00001000,B00001000,B00001000,B00001000,B00001000,B00001000,B00000000},
+{B01111001,B00001001,B00001001,B01111111,B01001000,B01001000,B01001111,B00000000}
+}
+};
+static unsigned long suka=0;
+if(millis()-suka>4000){
+for(int i=0;i<8;i++){
+for(int g=0;g<8;g++){
+lc.setRow(i,g,n[0][i][g]);
+}
+}
+suka=millis();
+}
+
+
+}
+
+void intro(){
+byte n[9][9]={
+{B11111111,B11111111,B11111111,B11111111,B11111111,B11111111,B11111111,B11111111},
+{B00010001,B00001001,B00000011,B00000111,B11011111,B11111111,B11111111,B11111111},
+{B01010000,B01010000,B01010000,B01110000,B00000000,B01111111,B11111111,B11111111},
+{B01010001,B01010111,B01010100,B01110111,B00000000,B00000011,B00011111,B11111111},
+{B11111000,B11111100,B11111100,B11111100,B11111110,B11111110,B11111111,B11111111},
+{B00011111,B00111111,B10011001,B00110000,B00110000,B01000100,B00001000,B10000001},
+{B00000000,B01010000,B01110000,B01100000,B01010000,B01010001,B00000000,B01110000},
+{B00000000,B01110111,B00100100,B00100111,B00100100,B00100100,B00000000,B01110111}
+};
+for(int i=0;i<8;i++){
+for(int g=0;g<8;g++){
+lc.setRow(i,g,n[i][g]);
+}
+}
+delay(4000);
+
+}
+
 void depiction(int index, int matrix, int shift){
  
   
