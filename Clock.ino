@@ -25,7 +25,18 @@ int delta;
 byte Modes;
 unsigned long  pressure_array[6], time_array[6];
 
-#include <EEPROM.h>      
+#include <EEPROM.h> 
+
+#define LOG_OUT 1 // use the log output function
+#define FHT_N 64  // set to 256 point fht
+#include <FHT.h>
+#define MIC_PIN 0
+double prevVolts = 100.0;
+
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+     
+#include <FHT.h> 
 
 #include "DHT.h"
 #define DHTTYPE DHT11 
@@ -51,6 +62,7 @@ LedControl lc=LedControl(12,11,10,8);
 #include "BigClockMode.h"
 #include "BigPresMode.h"
 #include "Bolds.h"
+#include "ComplexMode.h"
 //SmallNumber[10][6] BigNumber[10][2][8]
 
 //****************PROGRAM**********************************//
@@ -90,7 +102,13 @@ void setup(){
     pressure_array[i] = pres;  // забить весь массив текущим давлением
     time_array[i] = i;             // забить массив времени числами 0 - 5
   }
-  Modes=EEPROM.read(0);   
+  Modes=EEPROM.read(0); 
+  
+  sbi(ADCSRA, ADPS2);
+  cbi(ADCSRA, ADPS1);
+  sbi(ADCSRA, ADPS0);
+
+  analogReference(EXTERNAL);  
 }
 
 
@@ -261,8 +279,3 @@ if(millis()-WheatherTimer>6000000){
 
 }               
 }
-
-void ComplexMode1(){
-  
-}
- 

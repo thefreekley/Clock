@@ -1,34 +1,34 @@
-void LedAnimation1(boolean Off,int row,int matrix){
+void LedAnimation1(boolean Off,int row,int matrix,int ping){
     for(int i=1;i<8;i++){
   lc.setLed(matrix+4,i,row,Off);
-  delay(50);
+  delay(ping);
   }
   for(int i=0;i<7;i++){
   lc.setLed(matrix,i,row,Off);
-  delay(50);
+  delay(ping);
   }
     
 }
 
-void HorizontalRigthLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - включать, виключать пиксели
+void HorizontalRigthLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   for(int i=0;i<length_;i++){
     lc.setLed(matrix,column,i+row,OFF);
     delay(ping);
   }
 }
- void HorizontalLeftLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - включать, виключать пиксели
+ void HorizontalLeftLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   for(int i=length_-1;i>=0;i--){
     lc.setLed(matrix,column,i+row,OFF);
     delay(ping);
   }
 }
- void VerticalUpLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - включать, виключать пиксели
+ void VerticalUpLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   for(int i=length_-1;i>=0;i--){
     lc.setLed(matrix,column+i,row,OFF);
     delay(ping);
   }
 }
- void VerticalDownLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - включать, виключать пиксели
+ void VerticalDownLine(boolean OFF,byte matrix, byte row, byte column, byte length_, int ping){ //OFF - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   for(int i=0;i<length_;i++){
     lc.setLed(matrix,column+i,row,OFF);
     delay(ping);
@@ -37,7 +37,7 @@ void HorizontalRigthLine(boolean OFF,byte matrix, byte row, byte column, byte le
 
 void AnimationNumber(boolean off,int number,int matrix,int row,int ping){
   switch(number){
-   case 1:LedAnimation1(off,row,matrix); break;
+   case 1:LedAnimation1(off,row,matrix,ping); break;
    case 2:
    HorizontalRigthLine(off,matrix+4,row-1,1,3,ping);
    VerticalDownLine(off,matrix+4,row+1,1,7,ping);
@@ -106,5 +106,3 @@ void AnimationNumber(boolean off,int number,int matrix,int row,int ping){
     break;
   }
 }
-
-
