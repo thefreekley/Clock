@@ -19,8 +19,14 @@
 
 //**********************LIBRARARY***************************//
 void depiction(int index, int matrix, int shift);
-void SmallDepiction(int value,int matrix);
-//
+void SmallDepiction(int value,int matrix, int shift=0);
+int hum_array[9];
+int delta;
+byte Modes;
+unsigned long  pressure_array[6], time_array[6];
+
+#include <EEPROM.h>      
+
 #include "DHT.h"
 #define DHTTYPE DHT11 
 DHT dht(DHTPIN, DHTTYPE);
@@ -34,22 +40,23 @@ GButton BUTTON_UP(BUTTON_UP_PIN);
 GButton BUTTON_DOWN(BUTTON_DOWN_PIN);
 
 #include <iarduino_RTC.h>                                  
-iarduino_RTC time(RTC_DS3231);  
+iarduino_RTC time(RTC_DS1307);  
 
 #include "LedControlMS.h"
 LedControl lc=LedControl(12,11,10,8);
-#include "smiles.h"
+#include "BigTemperatureMode.h"
 #include "AnimationBumber.h"
 //void AnimationNumber(boolean off,int number,int matrix,int row,int ping)
-#include "BigTemperatureMode.h"
+#include "BigHumidityMode.h"
 #include "BigClockMode.h"
+#include "BigPresMode.h"
 #include "Bolds.h"
 //SmallNumber[10][6] BigNumber[10][2][8]
 
 //****************PROGRAM**********************************//
 
 
-
+ //- для вичеслення середнього значення вологості
 
 void setup(){
   dht.begin();
@@ -58,10 +65,13 @@ void setup(){
   bme.begin();
   time.begin(); 
   
-  for(int i=0;i<8;i++){
+  for(int i=0;i<9;i++){
+  hum_array[i]=dht.readHumidity();
+  if(i==8)break;
   lc.shutdown(i,false);
   lc.setIntensity(i,8);
   lc.clearDisplay(i);
+  
   }
   pinMode(6,INPUT_PULLUP);
   pinMode(4,INPUT_PULLUP);
@@ -71,33 +81,47 @@ void setup(){
   analogWrite(LED,250);
    randomSeed(analogRead(A6));
 
+  float temp(NAN), hum(NAN), pres(NAN);
+   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
+   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
+   bme.read(pres, temp, hum, tempUnit, presUnit);
+   
+ for (byte i = 0; i < 6; i++) {   // счётчик от 0 до 5
+    pressure_array[i] = pres;  // забить весь массив текущим давлением
+    time_array[i] = i;             // забить массив времени числами 0 - 5
+  }
+  Modes=EEPROM.read(0);   
 }
 
 
 void loop(){
- /*
+ 
   BUTTON_UP.tick();
   BUTTON_DOWN.tick();
-  static byte Modes;  
+    
   if(BUTTON_UP.isSingle()){
-    if(Modes>=1)Modes=0;
+  
+    if(Modes>=4)Modes=0;
     else Modes++;
+    EEPROM.write(0,Modes); 
     for(int i=0;i<8;i++){lc.clearDisplay(i);}
   }
   
   if(BUTTON_DOWN.isSingle()){
-    if(Modes<0)Modes=1;
+    if(Modes<=0)Modes=1;
     else Modes--;
+    EEPROM.write(0,Modes);
     for(int i=0;i<8;i++){lc.clearDisplay(i);}
   }
 
   switch(Modes){
     case 0: BigClockMode(); break;
     case 1: BigTemperatureMode(); break;
+    case 2: BigHumidityMode(); break;
+    case 3: BigPresMode(); break;
+    case 4: ComplexMode1(); break;
   }
-  */
-  //BigHumidityMode();
- arrowUp(0);
+  
   GetWeather();
   Shine();
  //  BigClockMode();
@@ -178,13 +202,14 @@ void depiction(int index, int matrix, int shift){
   }
   
 }
-void SmallDepiction(int value,int matrix){
+void SmallDepiction(int value,int matrix, int shift=0){
     int tenthPart=int(value/10);
     int singlePart=value-(int(value/10))*10;
     for(int i=0;i<6;i++){
       byte siftSinglePart=SmallNumber[singlePart][i]>>4;
       byte example=SmallNumber[tenthPart][i]|siftSinglePart;
-      lc.setRow(matrix,i+1,example);
+      if(shift>0)lc.setRow(matrix,i+1,example>>shift);
+      else lc.setRow(matrix,i+1,example<<abs(shift));
     }
     
 }
@@ -196,34 +221,25 @@ byte reflectByte(byte x){
 }
 
 
-void BigHumidityMode(){
-    static byte last_information=0;
-//    static unsigned long 
-//  float int = dht.readHumidity();
-  depiction(int(dht.readHumidity()/10), 3, 1);
-  depiction(dht.readHumidity()-(int(dht.readHumidity()/10))*10, 2, 1);
-  depiction(12,1,1);
+
+ void GetWeather(){
   
- if(dht.readHumidity()>40 && dht.readHumidity()<= 60)GoodSmile(4);
- else if((dht.readHumidity()>30 && dht.readHumidity()<=40) || (dht.readHumidity()>60 && dht.readHumidity()< 70))RestlessSmile(4);
- else if(dht.readHumidity()<=30 || dht.readHumidity()>=70)TeriblSmile(4);
-}
-
-
-
-static int angle, delta;
-static unsigned long pressure, aver_pressure, pressure_array[6], time_array[6];
+static unsigned long WheatherTimer=0;
+static unsigned long pressure;
 static unsigned long sumX, sumY, sumX2, sumXY;
 static float a, b;
 
- int GetWeather(){
-static unsigned long WheatherTimer=0;
-if(millis()-WheatherTimer>60000){
+if(millis()-WheatherTimer>6000000){
       delay(200);
-    pressure = aver_sens();                          
+        float temp(NAN), hum(NAN), pres(NAN);
+   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
+   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
+   bme.read(pres, temp, hum, tempUnit, presUnit); 
+   
+    pressure = pres;                          
     for (byte i = 0; i < 5; i++) {                  
       pressure_array[i] = pressure_array[i + 1];     
-    }
+    }   
     pressure_array[5] = pressure;                   
 
     sumX = 0;
@@ -240,57 +256,13 @@ if(millis()-WheatherTimer>60000){
     a = (long)6 * sumXY;  
     a = a - (long)sumX * sumY;
     a = (float)a / (6 * sumX2 - sumX * sumX);
-    delta = a * 6;                   
-    angle = map(delta, -250, 250, 0, 100);
-    angle = constrain(angle, 0, 100);  
-    Serial.println(angle);
+    delta = a * 6;                    
     WheatherTimer=millis();
-    return angle;
+
 }               
 }
 
-
-long aver_sens() {
-   float temp(NAN), hum(NAN), pres(NAN);
-   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
-   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
-   bme.read(pres, temp, hum, tempUnit, presUnit);
-
-  pressure = 0;
-  for (byte i = 0; i < 10; i++) {
-    pressure += pres;
-  }
-  aver_pressure = pressure / 10;
-  return aver_pressure;
-}
-
-void Information(){
+void ComplexMode1(){
   
-  int t = dht.readTemperature();
-
-
-   float temp(NAN), hum(NAN), pres(NAN);
-   BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
-   BME280::PresUnit presUnit(BME280::PresUnit_Pa);
-   bme.read(pres, temp, hum, tempUnit, presUnit);
-
-//   Serial.print(h);
-   Serial.print(" -hum DHT ");
-   Serial.print(t);
-   Serial.print ("-  temp DHT ");
-   Serial.print(pres);
-   Serial.print(" -pres BME280 ");
-   Serial.print(temp);
-   Serial.print(" -temp BME280 ");
-   Serial.print(analogRead(A2));
-   Serial.print(" - shine ");
-   Serial.print(digitalRead(6));
-   Serial.print(" ");
-   Serial.print(digitalRead(4));
-   Serial.print(" ");
-    Serial.print(time.seconds);
-   Serial.println(" -seconds ");
- 
 }
-
  

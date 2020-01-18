@@ -92,28 +92,105 @@ lc.setLed(matrix,last_value_column,last_value_row,1);
 pp=millis();
 }
 }
-void arrowUp(byte matrix){
+void arrowUp(byte matrix,int speed=100){
   static unsigned long prekol=0;
   static int phase=0;
 byte  arr[8]{B00001000,B00011100,B00001000,B00001000,B00001000,B00001000,B00001000,B00000000};
-  if(millis()-prekol>100){
+  if(millis()-prekol>speed){
     if(phase>13)phase=0;
     else phase++;
     byte interval=8;
-    if(phase>11)interval=4;
-         for(int i=(7-phase);i<interval;i++){lc.setRow(matrix,i,arr[abs(7-i-phase)]);}
+    if(phase>11)interval=14-interval;
+         for(int i=(7-phase);i<interval;i++){
+          lc.setRow(matrix,i,arr[abs(7-i-phase)]);
+          if(abs(7-i-phase)>7)break;
+          }
     prekol=millis();
   
 
   }
 }
-void arrowDown(byte matrix){
+
+void arrowDown(byte matrix,int speed=100){
   static unsigned long prekol=0;
   static int phase=0;
-byte  arr[8]{B00000000,B00001000,B00001000,B00001000,B00001000,B00001000,B00011100,B00001000};
-  if(millis()-prekol>100){
-    if(phase>13)phase=0;
+byte  arr[8]{B00001000,B00011100,B00001000,B00001000,B00001000,B00001000,B00001000,B00000000};
+  if(millis()-prekol>speed){
+    if(phase>14)phase=0;
     else phase++;
+   /* if(phase>6){
+      lc.setRow(matrix,abs(8-phase),B00000000);
+    for(int i=abs(7-phase);i<8;i++){lc.setRow(matrix,i,arr[i-abs(7-phase)]);}
+    }
+    else{
+      
+    }*/
+     //lc.clearDisplay(matrix);
+    for(int i=0;i<phase;i++){
+      if(abs(phase-i-1)>7 || i>7 )continue;
+      lc.setRow(matrix,i,arr[abs(phase-i-1)]);
+     // Serial.println(String(i) + "-i," + String(abs(phase-i-1)) + "-phase + i");
+    }
+    //Serial.println("_______________");
+    prekol=millis();
   }
 }
+void Equals(int matrix){
+byte  EqualsArr[8]{ B00000000,B11100000,B00010001,B00001110,B00000000,B11100000,B00010001,B00001110};
+  
+  
+  static unsigned long EqualsMillis=0;
+  static byte EqualsPhase=0;
+  
+  if(millis()-EqualsMillis>100){
+    if(EqualsPhase>7)EqualsPhase=0;
+    else EqualsPhase++;
+    EqualsMillis=millis();
+    for(int i=0;i<8;i++){lc.setRow(matrix,i,(EqualsArr[i]<<EqualsPhase)| (EqualsArr[i]>>8-EqualsPhase)) ;}
+  }
+  
+}
+
+void QuestionMark(int matrix){
+  byte arr[8]{B00000000,B00011000,B00100100,B00100100,B00001000,B00010000,B00000000,B00010000};
+    for(int i=0;i<8;i++){lc.setRow(matrix,i,arr[i]);}
+}
+void BigHumidityMode(){
+    static unsigned long test=0;
+
+int angle=0;
+static int old_angle;
+static int delta=400;
+static byte check_out=0;
+    
+    if(millis()-test>3000){
+  
+      depiction(int(dht.readHumidity()/10), 3, 1);
+  depiction(dht.readHumidity()-(int(dht.readHumidity()/10))*10, 2, 1);
+  depiction(12,1,0);
+  
+      if(check_out>8){
+        check_out=0;
+        for(int i=0;i<9;i++){angle+=hum_array[i];}
+        delta=angle-old_angle;
+        old_angle=angle;
+      }
+      else check_out++;
+                                
+    for (byte i = 0; i < 8; i++) {                  
+      hum_array[i] = hum_array[i + 1];     
+    }
+    hum_array[8] = dht.readHumidity();                   
+    test=millis();
+    }
+    
+   if(delta==0)Equals(0);
+    else if(delta<0)arrowDown(0,100-(20*abs(delta)));
+    else if(delta>300)QuestionMark(0);
+    else arrowUp(0,100-(20*(delta)));  
+  
+  
+ if(dht.readHumidity()>40 && dht.readHumidity()<= 60)GoodSmile(4);
+ else if((dht.readHumidity()>30 && dht.readHumidity()<=40) || (dht.readHumidity()>60 && dht.readHumidity()< 70))RestlessSmile(4);
+ else if(dht.readHumidity()<=30 || dht.readHumidity()>=70)TeriblSmile(4);
 }
