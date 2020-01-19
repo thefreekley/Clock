@@ -81,7 +81,7 @@ void BigTemperatureMode(){
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
    bme.read(pres, temp, hum, tempUnit, presUnit);
-   
+   temp=temp-3;
    if(temp>0)depiction(10,3,0);
    else depiction(11,3,0);
    depiction(int(temp/10),2,0);

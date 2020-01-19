@@ -166,11 +166,14 @@ for(byte j=0;j<weekday_;j++){
     */
 
 
-
+static byte old_angle;
     void ComplexMode1(){
   
    
-  int angle = map(delta, -250, 250, -2, 2);  
+  int angle = map(delta, -250, 250, -2, 2);
+  if(old_angle!=angle) lc.clearDisplay(7);
+  
+  old_angle=angle;  
   switch (angle){
     case -2: bad_weather(7,50,1,0); break;
     case -1: bad_weather(7,100,1,0); break;
@@ -185,7 +188,7 @@ for(byte j=0;j<weekday_;j++){
     int Hours1=(time.Hours-(int(time.Hours/10))*10);
     int Hours10=int(time.Hours/10);
   time.gettime();
-
+   if(time.Hours==0 && time.minutes==0 && time.seconds==0)lc.clearDisplay(3);
     
     static unsigned long time_for_change=0;
  static int throw_=0;
