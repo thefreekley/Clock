@@ -1,4 +1,4 @@
-void bad_weather(int matrix,int ping=50, boolean animation=1,boolean thunder=1);
+void bad_weather(int matrix,int ping=50, byte periodicity=0);
 void sun(int matrix,boolean animation=1);
 
 
@@ -29,7 +29,7 @@ void sun(int matrix,boolean animation=1);
    
  } */
 
-void sun(int matrix,boolean animation){
+void sun(int matrix,boolean animation, int ping=100){
   for(int i=2;i<6;i++){
     lc.setLed(matrix,1,i,1);
     lc.setLed(matrix,2,i,1);
@@ -39,7 +39,7 @@ void sun(int matrix,boolean animation){
   static unsigned long mil=0;
   static byte aa=0;
   if(animation){
-  if(millis()-aa>100){
+  if(millis()-aa>ping){
     if(aa>20)aa=0;
     else aa++;
     switch(aa){
@@ -64,14 +64,26 @@ void sun(int matrix,boolean animation){
   }
   }
 }
- void bad_weather(int matrix,int ping=50, boolean animation=1,boolean thunder=1){
+
+void darkly(int matrix, int shift_down=0);
+void sudenly(int matrix){
+    for(int i=0;i<4;i++){
+    lc.setLed(matrix,0,i,1);
+    lc.setLed(matrix,1,i,1);
+    lc.setLed(matrix,2,i,1);
+    lc.setLed(matrix,3,i,1);
+  }
+  darkly(7,4);
+  
+}
+ void bad_weather(int matrix,int ping=50,byte periodicity=0){
 
    byte arr_sky[4]{B00111100,B01111110,B11111111,B11111111};
    
     for(int i=0;i<4;i++){
      lc.setRow(matrix,i,arr_sky[i]);   
     }
-    if(animation){
+
       byte arr[8]{B10000000,B01000000,B00100000,B00010000,B00001000,B00000100,B00000010,B00000001};
    static unsigned long millis_bad=0;
    static byte period_=0;
@@ -79,8 +91,13 @@ void sun(int matrix,boolean animation){
    static byte arrFall[4];
    static byte old_rand=0;
    static byte thunder_time=0;
+   static byte summ=0;
+   
    if(millis()-millis_bad>ping){
-
+   // if(thunder==0){
+    if(summ>=periodicity)summ=0;
+    else summ++;
+    
     arrFall[3]=arrFall[2];
     arrFall[2]=arrFall[1];
     arrFall[1]=arrFall[0];
@@ -93,18 +110,20 @@ void sun(int matrix,boolean animation){
    // Serial.println(String(old_rand)+"    "+String(some_rand));
     old_rand=some_rand;
     
-    arrFall[0]=arr[some_rand];
+    if(summ==0)arrFall[0]=arr[some_rand];
+    else arrFall[0]=B00000000;
 
     for(int i=4;i<8;i++){
       lc.setRow(matrix,i,arrFall[i-4]);
     }
     
+
+    
     millis_bad=millis();
    }
-    }
  }
 
-void darkly(int matrix){
+void darkly(int matrix, int shift_down=0){
 byte  EqualsArr[8]{B01110000,B11111000,B11111000,B00000000,B00001110,B00011111,B00011111,B00000000};
   
 
@@ -115,7 +134,7 @@ byte  EqualsArr[8]{B01110000,B11111000,B11111000,B00000000,B00001110,B00011111,B
     if(EqualsPhase>7)EqualsPhase=0;
     else EqualsPhase++;
     EqualsMillis=millis();
-    for(int i=0;i<8;i++){lc.setRow(matrix,i,(EqualsArr[i]<<EqualsPhase)| (EqualsArr[i]>>8-EqualsPhase)) ;}
+    for(int i=shift_down;i<8;i++){lc.setRow(matrix,i,(EqualsArr[i-shift_down]<<EqualsPhase)| (EqualsArr[i-shift_down]>>8-EqualsPhase)) ;}
   }
   
 }
@@ -166,22 +185,20 @@ for(byte j=0;j<weekday_;j++){
     */
 
 
-static byte old_angle;
-    void ComplexMode1(){
-  
-   
-  int angle = map(delta, -250, 250, -2, 2);
-  if(old_angle!=angle) lc.clearDisplay(7);
-  
-  old_angle=angle;  
+    void ComplexMode1(){   
+  int angle = map(delta, -250, 250, -3, 3);
+ 
   switch (angle){
-    case -2: bad_weather(7,50,1,0); break;
-    case -1: bad_weather(7,100,1,0); break;
+    case -3: bad_weather(7,40,0); break;
+    case -2: bad_weather(7,55,3); break;
+    case -1: bad_weather(7,70,5); break;
     case 0:darkly(7); break;
-    case 1: sun(7,0); break;
-    case 2: sun(7,1); break;
+    case 1: sudenly(7); break;
+    case 2: sun(7,1,100); break;
+    case 3: sun(7,1,60); break;
+    default:QuestionMark(7); break;
    } 
-   
+    
  
   int minutes1=(time.minutes-(int(time.minutes/10))*10);
     int minutes10=int(time.minutes/10);

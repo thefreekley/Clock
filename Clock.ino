@@ -177,7 +177,7 @@ if(flag_zopka==0){
   lc.setIntensity(i,your_shine); 
   }
    }
-   Serial.println(your_shine);
+  // Serial.println(your_shine);
   }
  //  BigClockMode();
  // Serial.println(digitalRead(BUTTON_UP_PIN));
@@ -333,6 +333,8 @@ static unsigned long sumX, sumY, sumX2, sumXY;
 static float a, b;
 
 if(millis()-WheatherTimer>6000000){
+  if(Modes==4)lc.clearDisplay(7);
+  
       delay(200);
         float temp(NAN), hum(NAN), pres(NAN);
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
