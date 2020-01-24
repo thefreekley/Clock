@@ -187,7 +187,7 @@ for(byte j=0;j<weekday_;j++){
 
     void ComplexMode1(){   
   int angle = map(delta, -250, 250, -3, 3);
- 
+ angle = constrain(angle, -3, 3);  
   switch (angle){
     case -3: bad_weather(7,40,0); break;
     case -2: bad_weather(7,55,3); break;
