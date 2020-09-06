@@ -56,7 +56,7 @@ LedControl lc=LedControl(12,11,10,8);
 #include "ComplexMode.h"
 //SmallNumber[10][6] BigNumber[10][2][8]
 boolean change_shine;
-byte your_shine;
+byte your_shine=1;
 //****************PROGRAM**********************************//
 
 
@@ -72,7 +72,7 @@ void setup(){
   Wire.begin();
   bme.begin();
   time.begin(); 
-  
+  //time.settime(0,16,0,39,8,20,6);   
   for(int i=0;i<9;i++){
   hum_array[i]=dht.readHumidity();
   if(i==8)break;
@@ -110,19 +110,44 @@ void setup(){
 
 void loop(){
   static boolean flag_zopka=0;
+  static boolean flag_change_time=0;
   
   BUTTON_UP.tick();
   BUTTON_DOWN.tick();
   
   if(BUTTON_UP.isDouble())flag_zopka=!flag_zopka;
   
+  
   if(BUTTON_DOWN.isDouble()){
     change_shine=!change_shine;
     EEPROM.write(1,change_shine); 
   }
    
+ if(BUTTON_UP.isHold()&& !change_shine){
+  static byte minutes_;
+  
+  if(time.minutes<59)minutes_=time.minutes+1;
+  else minutes_=0;
+  time.settime(time.seconds,minutes_);
+    depiction((time.minutes-(int(time.minutes/10))*10),0,1);
+    depiction(int(time.minutes/10),1,1);
+    depiction((time.Hours-(int(time.Hours/10))*10),2,-1);
+    depiction(int(time.Hours/10),3,-1);
  
-  if(BUTTON_UP.isSingle()){
+ }
+ if(BUTTON_DOWN.isHold() && !change_shine){
+  static byte hours_;
+   if(time.Hours<23)hours_=time.Hours+1;
+    else hours_=0;
+     time.settime(time.seconds,time.minutes,hours_);
+    depiction((time.minutes-(int(time.minutes/10))*10),0,1);
+    depiction(int(time.minutes/10),1,1);
+    depiction((time.Hours-(int(time.Hours/10))*10),2,-1);
+    depiction(int(time.Hours/10),3,-1);
+  
+ }
+ 
+  if(BUTTON_UP.isSingle() ){
   flag_zopka=0;
     if(Modes>=4)Modes=0;
     else Modes++;
@@ -163,7 +188,7 @@ if(flag_zopka==0){
     if(your_shine>=15)your_shine=0;
     else your_shine++;
     EEPROM.write(2,your_shine);
-    delay(200);
+    delay(1);
      for(int i=0;i<8;i++){
   lc.setIntensity(i,your_shine); 
   }  
@@ -206,7 +231,7 @@ int Shine(){
   
   if(millis()-flag1>5000){
   
-  intensity= map(analogRead(PHOTORESISTOR),20,800,0,13);
+  intensity= map(analogRead(PHOTORESISTOR),20,800,0,8);
   
   
   //Serial.println(intensity);
