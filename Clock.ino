@@ -235,8 +235,8 @@ int Shine(){
 
     
  
-  intensity= map(analogRead(PHOTORESISTOR),20,800,0,2);
-  
+  intensity= map(analogRead(PHOTORESISTOR),20,800,0,4);
+  if(intensity>2)intensity=3;
 
   if(intensity!=0){
     for(int i=0;i<8;i++){
