@@ -235,10 +235,10 @@ int Shine(){
 
     
  
-  intensity= map(analogRead(PHOTORESISTOR),20,800,0,4);
+  intensity= map(analogRead(PHOTORESISTOR),20,800,0,5);
   if(intensity>2)intensity=3;
-
-  if(intensity!=0){
+  
+  if(analogRead(PHOTORESISTOR) > 40 ){
     for(int i=0;i<8;i++){
   lc.shutdown(i,false);
   }
