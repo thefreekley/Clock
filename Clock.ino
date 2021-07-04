@@ -63,6 +63,7 @@ byte your_shine=1;
  //- для вичеслення середнього значення вологості
 
 void setup(){
+
       Modes=EEPROM.read(0); 
   change_shine=EEPROM.read(1);
   your_shine=EEPROM.read(2);
@@ -224,22 +225,29 @@ if(flag_zopka==0){
 
 int Shine(){
   static byte old_intensity=0;
-  static byte intensity=8;
+  static byte intensity=2;
   static long flag1=0;
+  static boolean change_flag = true;
   
   old_intensity=intensity;
   
   if(millis()-flag1>5000){
+
+    
+ 
+  intensity= map(analogRead(PHOTORESISTOR),20,800,0,2);
   
-  intensity= map(analogRead(PHOTORESISTOR),20,800,0,8);
-  
-  
+
+  if(intensity!=0){
+    for(int i=0;i<8;i++){
+  lc.shutdown(i,false);
+  }
   //Serial.println(intensity);
   if(old_intensity>=intensity){
   for(int g=old_intensity;g>=intensity;g--){
   // Serial.println(g);
    for(int i=0;i<8;i++){
-  lc.setIntensity(i,g);
+  lc.setIntensity(i,old_intensity);
   }
   
   delay(50);
@@ -249,11 +257,19 @@ int Shine(){
   for(int g=old_intensity;g<=intensity;g++){
   // Serial.println(g);
    for(int i=0;i<8;i++){
-  lc.setIntensity(i,g);
+  lc.setIntensity(i,old_intensity);
   }
   
   delay(50);
   }
+  }
+  
+  }
+  else{
+     for(int i=0;i<8;i++){
+  lc.shutdown(i,true);
+  }
+    
   }
   
   flag1=millis();
